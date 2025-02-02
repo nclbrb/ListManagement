@@ -85,16 +85,59 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_task'])) {
                             <th>Description</th>
                             <th>Due Date</th>
                             <th>Priority</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($_SESSION['tasks'] as $task): ?>
+                        <?php foreach ($_SESSION['tasks'] as $index => $task): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($task['title']); ?></td>
-                                <td><?php echo htmlspecialchars($task['description']); ?></td>
-                                <td><?php echo htmlspecialchars($task['due_date']); ?></td>
-                                <td><?php echo htmlspecialchars($task['priority']); ?></td>
+                                <td><?= htmlspecialchars($task['title']) ?></td>
+                                <td><?= htmlspecialchars($task['description']) ?></td>
+                                <td><?= htmlspecialchars($task['due_date']) ?></td>
+                                <td><?= htmlspecialchars($task['priority']) ?></td>
+                                <td>
+                                    <!-- Edit button triggers modal -->
+                                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editModal<?= $index ?>">Edit</button>
+                                </td>
                             </tr>
+
+                            <!-- Edit Modal -->
+                            <div class="modal fade" id="editModal<?= $index ?>" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Edit Task</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form method="POST">
+                                                <input type="hidden" name="task_index" value="<?= $index ?>">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Title:</label>
+                                                    <input type="text" name="title" class="form-control" value="<?= htmlspecialchars($task['title']) ?>" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Description:</label>
+                                                    <textarea name="description" class="form-control" rows="3" required><?= htmlspecialchars($task['description']) ?></textarea>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Due Date:</label>
+                                                    <input type="date" name="due_date" class="form-control" value="<?= htmlspecialchars($task['due_date']) ?>" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Priority:</label>
+                                                    <select name="priority" class="form-select">
+                                                        <option value="Low" <?= $task['priority'] == 'Low' ? 'selected' : '' ?>>Low</option>
+                                                        <option value="Medium" <?= $task['priority'] == 'Medium' ? 'selected' : '' ?>>Medium</option>
+                                                        <option value="High" <?= $task['priority'] == 'High' ? 'selected' : '' ?>>High</option>
+                                                    </select>
+                                                </div>
+                                                <button type="submit" name="update_task" class="btn btn-primary">Save Changes</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
