@@ -8,8 +8,8 @@ if (!isset($_SESSION['tasks'])) {
 
 // Handle form submission to add a task
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_task'])) {
-    $title = $_POST['title'];
-    $description = $_POST['description'];
+    $title = trim($_POST['title']);
+    $description = trim($_POST['description']);
     $due_date = $_POST['due_date'];
     $priority = $_POST['priority'];
 
@@ -27,8 +27,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_task'])) {
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
     $index = $_POST['task_index'];
     $_SESSION['tasks'][$index] = [
-        'title' => $_POST['title'],
-        'description' => $_POST['description'],
+        'title' => trim($_POST['title']),
+        'description' => trim($_POST['description']),
         'due_date' => $_POST['due_date'],
         'priority' => $_POST['priority']
     ];
@@ -41,13 +41,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Task Manager (Session-Based)</title>
+    <title>Task Manager</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .card { border-radius: 1rem; }
+        .modal-content { border-radius: 1rem; }
+        .btn { border-radius: 0.5rem; }
+    </style>
 </head>
-<body class="bg-light">
+<body>
 <div class="container mt-5">
     <div class="card shadow-lg">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-primary text-white text-center">
             <h3 class="mb-0">Create a New Task</h3>
         </div>
         <div class="card-body">
@@ -79,18 +85,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
 
     <!-- Confirmation Message -->
     <?php if (isset($message)): ?>
-        <div class="alert alert-success mt-3"> <?= $message ?> </div>
+        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+            <?= htmlspecialchars($message) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     <?php endif; ?>
 
     <!-- Task List -->
     <div class="card shadow-lg mt-4">
-        <div class="card-header bg-dark text-white">
+        <div class="card-header bg-dark text-white text-center">
             <h3 class="mb-0">Task List</h3>
         </div>
         <div class="card-body">
             <?php if (!empty($_SESSION['tasks'])): ?>
-                <table class="table table-bordered">
-                    <thead class="table-dark">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-dark text-center">
                         <tr>
                             <th>Title</th>
                             <th>Description</th>
@@ -106,8 +115,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
                                 <td><?= htmlspecialchars($task['description']) ?></td>
                                 <td><?= htmlspecialchars($task['due_date']) ?></td>
                                 <td><?= htmlspecialchars($task['priority']) ?></td>
-                                <td>
-                                    <!-- Edit button triggers modal -->
+                                <td class="text-center">
                                     <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editModal<?= $index ?>">Edit</button>
                                 </td>
                             </tr>
@@ -143,7 +151,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
                                                         <option value="High" <?= $task['priority'] == 'High' ? 'selected' : '' ?>>High</option>
                                                     </select>
                                                 </div>
-                                                <button type="submit" name="update_task" class="btn btn-primary">Save Changes</button>
+                                                <button type="submit" name="update_task" class="btn btn-primary w-100">Save Changes</button>
                                             </form>
                                         </div>
                                     </div>
