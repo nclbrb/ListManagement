@@ -32,6 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
         'due_date' => $_POST['due_date'],
         'priority' => $_POST['priority']
     ];
+    $message = "Task updated successfully!";
 }
 ?>
 
@@ -41,11 +42,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Task Manager (Session-Based)</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-
 <div class="container mt-5">
     <div class="card shadow-lg">
         <div class="card-header bg-primary text-white">
@@ -57,17 +56,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
                     <label class="form-label">Title:</label>
                     <input type="text" name="title" class="form-control" required>
                 </div>
-
                 <div class="mb-3">
                     <label class="form-label">Description:</label>
                     <textarea name="description" class="form-control" rows="3" required></textarea>
                 </div>
-
                 <div class="mb-3">
                     <label class="form-label">Due Date:</label>
                     <input type="date" name="due_date" class="form-control" required>
                 </div>
-
                 <div class="mb-3">
                     <label class="form-label">Priority:</label>
                     <select name="priority" class="form-select">
@@ -76,11 +72,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
                         <option value="High">High</option>
                     </select>
                 </div>
-
                 <button type="submit" name="add_task" class="btn btn-success w-100">Add Task</button>
             </form>
         </div>
     </div>
+
+    <!-- Confirmation Message -->
+    <?php if (isset($message)): ?>
+        <div class="alert alert-success mt-3"> <?= $message ?> </div>
+    <?php endif; ?>
 
     <!-- Task List -->
     <div class="card shadow-lg mt-4">
@@ -159,7 +159,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
     </div>
 </div>
 
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
