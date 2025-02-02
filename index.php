@@ -22,6 +22,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_task'])) {
 
     $_SESSION['tasks'][] = $task;
 }
+
+// Handle task update
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
+    $index = $_POST['task_index'];
+    $_SESSION['tasks'][$index] = [
+        'title' => $_POST['title'],
+        'description' => $_POST['description'],
+        'due_date' => $_POST['due_date'],
+        'priority' => $_POST['priority']
+    ];
+}
 ?>
 
 <!DOCTYPE html>
