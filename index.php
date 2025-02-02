@@ -1,25 +1,26 @@
 <?php
-require 'db.php'; // Database connection
+session_start();
 
-$message = "";
+// Initialize tasks array in session if not set
+if (!isset($_SESSION['tasks'])) {
+    $_SESSION['tasks'] = [];
+}
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+// Handle form submission to add a task
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_task'])) {
     $title = $_POST['title'];
     $description = $_POST['description'];
     $due_date = $_POST['due_date'];
     $priority = $_POST['priority'];
 
-    $stmt = $conn->prepare("INSERT INTO tasks (title, description, due_date, priority) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("ssss", $title, $description, $due_date, $priority);
+    $task = [
+        'title' => $title,
+        'description' => $description,
+        'due_date' => $due_date,
+        'priority' => $priority
+    ];
 
-    if ($stmt->execute()) {
-        $message = "<div class='alert alert-success'>Task created successfully!</div>";
-    } else {
-        $message = "<div class='alert alert-danger'>Error creating task.</div>";
-    }
-
-    $stmt->close();
-    $conn->close();
+    $_SESSION['tasks'][] = $task;
 }
 ?>
 
@@ -28,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Create Task</title>
+    <title>Task Manager (Session-Based)</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -40,7 +41,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h3 class="mb-0">Create a New Task</h3>
         </div>
         <div class="card-body">
-            <?php echo $message; ?>
             <form method="POST">
                 <div class="mb-3">
                     <label class="form-label">Title:</label>
@@ -66,8 +66,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-success w-100">Create Task</button>
+                <button type="submit" name="add_task" class="btn btn-success w-100">Add Task</button>
             </form>
+        </div>
+    </div>
+
+    <!-- Task List -->
+    <div class="card shadow-lg mt-4">
+        <div class="card-header bg-dark text-white">
+            <h3 class="mb-0">Task List</h3>
+        </div>
+        <div class="card-body">
+            <?php if (!empty($_SESSION['tasks'])): ?>
+                <table class="table table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Due Date</th>
+                            <th>Priority</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($_SESSION['tasks'] as $task): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($task['title']); ?></td>
+                                <td><?php echo htmlspecialchars($task['description']); ?></td>
+                                <td><?php echo htmlspecialchars($task['due_date']); ?></td>
+                                <td><?php echo htmlspecialchars($task['priority']); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php else: ?>
+                <p class="text-center">No tasks available.</p>
+            <?php endif; ?>
         </div>
     </div>
 </div>
