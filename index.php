@@ -21,38 +21,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_task'])) {
     $priority = $_POST['priority'];
     $assigned_user = $_POST['assigned_user'];
 
-    // Check if a task with the same title already exists
-    $task_exists = false;
-    foreach ($_SESSION['tasks'] as $task) {
-        if ($task['title'] == $title) {
-            $task_exists = true;
-            break;
-        }
-    }
-    
-    if (!$task_exists) {
-        $task = [
-            'title' => $title,
-            'description' => $description,
-            'due_date' => $due_date,
-            'priority' => $priority,
-            'assigned_user' => $assigned_user,
-            'status' => 'To Do',
-            'comments' => []
-        ];
+    // Add default status "To Do"
+    $task = [
+        'title' => $title,
+        'description' => $description,
+        'due_date' => $due_date,
+        'priority' => $priority,
+        'assigned_user' => $assigned_user,
+        'status' => 'To Do',
+        'comments' => []
+    ];
 
-        $_SESSION['tasks'][] = $task;
+    $_SESSION['tasks'][] = $task;
 
-        usort($_SESSION['tasks'], function($a, $b) {
-            return strtotime($a['due_date']) - strtotime($b['due_date']);
-        });
+    // Sort the tasks by due date
+    usort($_SESSION['tasks'], function($a, $b) {
+        return strtotime($a['due_date']) - strtotime($b['due_date']);
+    });
 
-        $_SESSION['notifications'][$assigned_user][] = "You have been assigned a new task: $title";
+    $_SESSION['notifications'][$assigned_user][] = "You have been assigned a new task: $title";
+    $_SESSION['new_notification_user'] = $assigned_user;
 
-        $_SESSION['new_notification_user'] = $assigned_user;
-    } else {
-        $_SESSION['notification'] = "Task with the title '$title' already exists.";
-    }
+    // Redirect to prevent form re-submission on refresh
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
 }
 
 // Handle task update
@@ -111,7 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_comment'])) {
 
     if (isset($_SESSION['tasks'][$task_index]['comments'])) {
         unset($_SESSION['tasks'][$task_index]['comments'][$comment_index]);
-        $_SESSION['tasks'][$task_index]['comments'] = array_values($_SESSION['tasks'][$task_index]['comments']); 
+        $_SESSION['tasks'][$task_index]['comments'] = array_values($_SESSION['tasks'][$task_index]['comments']);
     }
 }
 
@@ -247,15 +239,17 @@ $filtered_tasks = array_filter($_SESSION['tasks'], function($task) use ($status_
                                     <td><?= htmlspecialchars($task['assigned_user']) ?></td>
                                     <td><?= isset($task['status']) ? htmlspecialchars($task['status']) : 'Not Set' ?></td>
                                     <td class="text-center">
+                                    <div class="d-flex justify-content-center align-items-center gap-2">
                                         <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editModal<?= $index ?>">Edit</button>
                                         <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#commentModal<?= $index ?>">Comments</button>
-                                        <form method="POST" style="display:inline;">
-                                            <input type="hidden" name="task_index" value="<?= $index ?>">
-                                            <button type="submit" name="delete_task" class="btn btn-danger btn-sm">Delete</button>
+                                        <form method="POST" class="d-inline">
+                                        <input type="hidden" name="task_index" value="<?= $index ?>">
+                                        <button type="submit" name="delete_task" class="btn btn-danger btn-sm">Delete</button>
                                         </form>
+                                    </div>
                                     </td>
                                 </tr>
-
+                                
                                 <!-- Comments Modal -->
                                 <div class="modal fade" id="commentModal<?= $index ?>" tabindex="-1">
                                     <div class="modal-dialog">
