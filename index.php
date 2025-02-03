@@ -28,7 +28,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_task'])) {
         'due_date' => $due_date,
         'priority' => $priority,
         'assigned_user' => $assigned_user,
-        'status' => 'To Do'  // Default status
+        'status' => 'To Do',
+        'comments' => []
     ];
 
     $_SESSION['tasks'][] = $task;
@@ -39,8 +40,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_task'])) {
     });
 
     $_SESSION['notifications'][$assigned_user][] = "You have been assigned a new task: $title";
-
     $_SESSION['new_notification_user'] = $assigned_user;
+
+    // Redirect to prevent form re-submission on refresh
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
 }
 
 // Handle task update
@@ -74,6 +78,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_task'])) {
         return strtotime($a['due_date']) - strtotime($b['due_date']);
     });
     $message = "Task deleted successfully!";
+}
+
+// Handle adding a comment
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_comment'])) {
+    $task_index = $_POST['task_index'];
+    $comment = trim($_POST['comment']);
+
+    if (!isset($_SESSION['tasks'][$task_index]['comments'])) {
+        $_SESSION['tasks'][$task_index]['comments'] = [];
+    }
+
+    if (!empty($comment)) {
+        if (!in_array($comment, $_SESSION['tasks'][$task_index]['comments'])) {
+            $_SESSION['tasks'][$task_index]['comments'][] = $comment;
+        }
+    }
+}
+
+// Handle deleting a comment
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_comment'])) {
+    $task_index = $_POST['task_index'];
+    $comment_index = $_POST['comment_index'];
+
+    if (isset($_SESSION['tasks'][$task_index]['comments'])) {
+        unset($_SESSION['tasks'][$task_index]['comments'][$comment_index]);
+        $_SESSION['tasks'][$task_index]['comments'] = array_values($_SESSION['tasks'][$task_index]['comments']);
+    }
 }
 
 // Filter tasks by status and priority
@@ -208,13 +239,62 @@ $filtered_tasks = array_filter($_SESSION['tasks'], function($task) use ($status_
                                     <td><?= htmlspecialchars($task['assigned_user']) ?></td>
                                     <td><?= isset($task['status']) ? htmlspecialchars($task['status']) : 'Not Set' ?></td>
                                     <td class="text-center">
+                                    <div class="d-flex justify-content-center align-items-center gap-2">
                                         <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editModal<?= $index ?>">Edit</button>
-                                        <form method="POST" style="display:inline;">
-                                            <input type="hidden" name="task_index" value="<?= $index ?>">
-                                            <button type="submit" name="delete_task" class="btn btn-danger btn-sm">Delete</button>
+                                        <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#commentModal<?= $index ?>">Comments</button>
+                                        <form method="POST" class="d-inline">
+                                        <input type="hidden" name="task_index" value="<?= $index ?>">
+                                        <button type="submit" name="delete_task" class="btn btn-danger btn-sm">Delete</button>
                                         </form>
+                                    </div>
                                     </td>
                                 </tr>
+                                
+                                <!-- Comments Modal -->
+                                <div class="modal fade" id="commentModal<?= $index ?>" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Comments for <?= htmlspecialchars($task['title']) ?></h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                
+                                                <!-- Add Comment Form -->
+                                                <form method="POST">
+                                                    <input type="hidden" name="task_index" value="<?= $index ?>">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Add Comment:</label>
+                                                        <textarea name="comment" class="form-control" rows="3" required></textarea>
+                                                    </div>
+                                                    <button type="submit" name="add_comment" class="btn btn-primary w-100">Add Comment</button>
+                                                </form>
+
+                                                <!-- Display Comments -->
+                                                <hr>
+                                                <h5>Existing Comments:</h5>
+                                                <?php if (!empty($task['comments'])): ?>
+                                                    <ul class="list-group">
+                                                        <?php foreach ($task['comments'] as $comment_index => $comment): ?>
+                                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                <?= htmlspecialchars($comment) ?>
+
+                                                                <!-- Delete Comment -->
+                                                                <form method="POST" style="display:inline;">
+                                                                    <input type="hidden" name="task_index" value="<?= $index ?>">
+                                                                    <input type="hidden" name="comment_index" value="<?= $comment_index ?>">
+                                                                    <button type="submit" name="delete_comment" class="btn btn-danger btn-sm">Delete</button>
+                                                                </form>
+                                                            </li>
+                                                        <?php endforeach; ?>
+                                                    </ul>
+                                                <?php else: ?>
+                                                    <p>No comments yet.</p>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div class="modal fade" id="editModal<?= $index ?>" tabindex="-1">
                                     <div class="modal-dialog">
