@@ -209,6 +209,7 @@ $filtered_tasks = array_filter($_SESSION['tasks'], function($task) use ($status_
                                     <td><?= isset($task['status']) ? htmlspecialchars($task['status']) : 'Not Set' ?></td>
                                     <td class="text-center">
                                         <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editModal<?= $index ?>">Edit</button>
+                                        <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#commentModal<?= $index ?>">Comments</button>
                                         <form method="POST" style="display:inline;">
                                             <input type="hidden" name="task_index" value="<?= $index ?>">
                                             <button type="submit" name="delete_task" class="btn btn-danger btn-sm">Delete</button>
