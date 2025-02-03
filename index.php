@@ -243,6 +243,7 @@ $filtered_tasks = array_filter($_SESSION['tasks'], function($task) use ($status_
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                             </div>
                                             <div class="modal-body">
+                                                
                                                 <!-- Add Comment Form -->
                                                 <form method="POST">
                                                     <input type="hidden" name="task_index" value="<?= $index ?>">
@@ -257,9 +258,9 @@ $filtered_tasks = array_filter($_SESSION['tasks'], function($task) use ($status_
                                                 <hr>
                                                 <h5>Existing Comments:</h5>
                                                 <?php if (!empty($task['comments'])): ?>
-                                                    <ul>
+                                                    <ul class="list-group">
                                                         <?php foreach ($task['comments'] as $comment_index => $comment): ?>
-                                                            <li>
+                                                            <li class="list-group-item d-flex justify-content-between align-items-center">
                                                                 <?= htmlspecialchars($comment) ?>
                                                                 <!-- Delete Comment -->
                                                                 <form method="POST" style="display:inline;">
@@ -277,6 +278,7 @@ $filtered_tasks = array_filter($_SESSION['tasks'], function($task) use ($status_
                                         </div>
                                     </div>
                                 </div>
+                                
                                 <div class="modal fade" id="editModal<?= $index ?>" tabindex="-1">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
