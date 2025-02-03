@@ -49,6 +49,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
     ];
     $message = "Task updated successfully!";
 }
+
+// Handle task update
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
+    $index = $_POST['task_index'];
+    $_SESSION['tasks'][$index] = [
+        'title' => trim($_POST['title']),
+        'description' => trim($_POST['description']),
+        'due_date' => $_POST['due_date'],
+        'priority' => $_POST['priority']
+    ];
+    $message = "Task updated successfully!";
+}
 ?>
 
 <!DOCTYPE html>
@@ -56,13 +68,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Task Manager</title>
+    <title>Task Manager (Session-Based)</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { background-color: #f8f9fa; }
         .card { border-radius: 1rem; }
         .modal-content { border-radius: 1rem; }
         .btn { border-radius: 0.5rem; }
+
         .alert-container {
             position: fixed;
             top: 0;
@@ -70,6 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
             right: 0;
             z-index: 1050; 
         }
+
     </style>
 </head>
 <body>
@@ -151,6 +166,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
                             <th>Due Date</th>
                             <th>Priority</th>
                             <th>Assigned User</th>
+
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -162,6 +178,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
                                 <td><?= htmlspecialchars($task['due_date']) ?></td>
                                 <td><?= htmlspecialchars($task['priority']) ?></td>
                                 <td><?= htmlspecialchars($task['assigned_user']) ?></td>
+
+
                                 <td class="text-center">
                                     <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editModal<?= $index ?>">Edit</button>
                                 </td>
@@ -198,6 +216,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
                                                         <option value="High" <?= $task['priority'] == 'High' ? 'selected' : '' ?>>High</option>
                                                     </select>
                                                 </div>
+
                                                 <div class="mb-3">
                                                     <label class="form-label">Assign to:</label>
                                                     <select name="assigned_user" class="form-select">
@@ -206,6 +225,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
                                                         <?php endforeach; ?>
                                                     </select>
                                                 </div>
+
                                                 <button type="submit" name="update_task" class="btn btn-primary w-100">Save Changes</button>
                                             </form>
                                         </div>
