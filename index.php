@@ -21,27 +21,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_task'])) {
     $priority = $_POST['priority'];
     $assigned_user = $_POST['assigned_user'];
 
-    // Add default status "To Do"
-    $task = [
-        'title' => $title,
-        'description' => $description,
-        'due_date' => $due_date,
-        'priority' => $priority,
-        'assigned_user' => $assigned_user,
-        'status' => 'To Do',
-        'comments' => []
-    ];
+    // Check if a task with the same title already exists
+    $task_exists = false;
+    foreach ($_SESSION['tasks'] as $task) {
+        if ($task['title'] == $title) {
+            $task_exists = true;
+            break;
+        }
+    }
+    
+    if (!$task_exists) {
+        $task = [
+            'title' => $title,
+            'description' => $description,
+            'due_date' => $due_date,
+            'priority' => $priority,
+            'assigned_user' => $assigned_user,
+            'status' => 'To Do',
+            'comments' => []
+        ];
 
-    $_SESSION['tasks'][] = $task;
+        $_SESSION['tasks'][] = $task;
 
-    // Sort the tasks by due date
-    usort($_SESSION['tasks'], function($a, $b) {
-        return strtotime($a['due_date']) - strtotime($b['due_date']);
-    });
+        usort($_SESSION['tasks'], function($a, $b) {
+            return strtotime($a['due_date']) - strtotime($b['due_date']);
+        });
 
-    $_SESSION['notifications'][$assigned_user][] = "You have been assigned a new task: $title";
+        $_SESSION['notifications'][$assigned_user][] = "You have been assigned a new task: $title";
 
-    $_SESSION['new_notification_user'] = $assigned_user;
+        $_SESSION['new_notification_user'] = $assigned_user;
+    } else {
+        $_SESSION['notification'] = "Task with the title '$title' already exists.";
+    }
 }
 
 // Handle task update
