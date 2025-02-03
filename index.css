@@ -1,0 +1,41 @@
+body { 
+    background-color: #f8f9fa; 
+    font-family: "Rubik", serif;
+}
+
+
+
+.card { 
+    border-radius: 1rem; 
+}
+
+.modal-content { 
+    border-radius: 1rem; 
+}
+
+.btn { 
+    border-radius: 0.5rem; 
+}
+
+.alert-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1050;
+}
+.container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.task-list {
+    height: 600px; /* Set fixed height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    flex: 2;
+}
+
+.task-form {
+    flex: 1;
+    margin-right: 20px;
+}
