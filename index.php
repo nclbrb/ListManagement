@@ -93,6 +93,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_comment'])) {
     }
 }
 
+// Handle deleting a comment
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_comment'])) {
+    $task_index = $_POST['task_index'];
+    $comment_index = $_POST['comment_index'];
+
+    if (isset($_SESSION['tasks'][$task_index]['comments'])) {
+        unset($_SESSION['tasks'][$task_index]['comments'][$comment_index]);
+        $_SESSION['tasks'][$task_index]['comments'] = array_values($_SESSION['tasks'][$task_index]['comments']); 
+    }
+}
+
 // Filter tasks by status and priority
 $status_filter = isset($_POST['status_filter']) ? $_POST['status_filter'] : '';
 $priority_filter = isset($_POST['priority_filter']) ? $_POST['priority_filter'] : '';
@@ -262,6 +273,7 @@ $filtered_tasks = array_filter($_SESSION['tasks'], function($task) use ($status_
                                                         <?php foreach ($task['comments'] as $comment_index => $comment): ?>
                                                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                                                 <?= htmlspecialchars($comment) ?>
+
                                                                 <!-- Delete Comment -->
                                                                 <form method="POST" style="display:inline;">
                                                                     <input type="hidden" name="task_index" value="<?= $index ?>">
@@ -278,7 +290,7 @@ $filtered_tasks = array_filter($_SESSION['tasks'], function($task) use ($status_
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="modal fade" id="editModal<?= $index ?>" tabindex="-1">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
