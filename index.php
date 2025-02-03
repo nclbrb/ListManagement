@@ -1,9 +1,16 @@
 <?php
 session_start();
 
-// Initialize tasks array in session if not set
 if (!isset($_SESSION['tasks'])) {
     $_SESSION['tasks'] = [];
+}
+
+if (!isset($_SESSION['users'])) {
+    $_SESSION['users'] = ['user1', 'user2', 'user3']; 
+}
+
+if (!isset($_SESSION['notifications'])) {
+    $_SESSION['notifications'] = [];
 }
 
 // Handle form submission to add a task
@@ -12,15 +19,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_task'])) {
     $description = trim($_POST['description']);
     $due_date = $_POST['due_date'];
     $priority = $_POST['priority'];
+    $assigned_user = $_POST['assigned_user'];
 
     $task = [
         'title' => $title,
         'description' => $description,
         'due_date' => $due_date,
-        'priority' => $priority
+        'priority' => $priority,
+        'assigned_user' => $assigned_user // Task assignment
     ];
 
     $_SESSION['tasks'][] = $task;
+
+    
+    $_SESSION['notifications'][$assigned_user][] = "You have been assigned a new task: $title";
+ 
+    $_SESSION['new_notification_user'] = $assigned_user; // Store the user that has a notification
+}
+
+// Handle task update
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
+    $index = $_POST['task_index'];
+    $_SESSION['tasks'][$index] = [
+        'title' => trim($_POST['title']),
+        'description' => trim($_POST['description']),
+        'due_date' => $_POST['due_date'],
+        'priority' => $_POST['priority'],
+        'assigned_user' => $_POST['assigned_user']
+    ];
+    $message = "Task updated successfully!";
 }
 
 // Handle task update
@@ -42,16 +69,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Task Manager (Session-Based)</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { background-color: #f8f9fa; }
         .card { border-radius: 1rem; }
         .modal-content { border-radius: 1rem; }
         .btn { border-radius: 0.5rem; }
+
+        .alert-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1050; 
+        }
+
     </style>
 </head>
 <body>
 <div class="container mt-5">
+   
+    <?php if (isset($_SESSION['new_notification_user'])): ?>
+        <div class="alert-container">
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <strong>Notification for <?= htmlspecialchars($_SESSION['new_notification_user']) ?>!</strong> You have been assigned a new task.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+        <script>
+            
+            alert('You have been assigned a new task!');
+        </script> 
+        <?php unset($_SESSION['new_notification_user']);  ?>
+    <?php endif; ?>
+
     <div class="card shadow-lg">
         <div class="card-header bg-primary text-white text-center">
             <h3 class="mb-0">Create a New Task</h3>
@@ -76,6 +128,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
                         <option value="Low">Low</option>
                         <option value="Medium">Medium</option>
                         <option value="High">High</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Assign to:</label>
+                    <select name="assigned_user" class="form-select">
+                        <?php foreach ($_SESSION['users'] as $user): ?>
+                            <option value="<?= $user ?>"><?= $user ?></option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
                 <button type="submit" name="add_task" class="btn btn-success w-100">Add Task</button>
@@ -105,6 +165,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
                             <th>Description</th>
                             <th>Due Date</th>
                             <th>Priority</th>
+                            <th>Assigned User</th>
+
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -115,6 +177,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
                                 <td><?= htmlspecialchars($task['description']) ?></td>
                                 <td><?= htmlspecialchars($task['due_date']) ?></td>
                                 <td><?= htmlspecialchars($task['priority']) ?></td>
+                                <td><?= htmlspecialchars($task['assigned_user']) ?></td>
+
+
                                 <td class="text-center">
                                     <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editModal<?= $index ?>">Edit</button>
                                 </td>
@@ -151,6 +216,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_task'])) {
                                                         <option value="High" <?= $task['priority'] == 'High' ? 'selected' : '' ?>>High</option>
                                                     </select>
                                                 </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Assign to:</label>
+                                                    <select name="assigned_user" class="form-select">
+                                                        <?php foreach ($_SESSION['users'] as $user): ?>
+                                                            <option value="<?= $user ?>" <?= $task['assigned_user'] == $user ? 'selected' : '' ?>><?= $user ?></option>
+                                                        <?php endforeach; ?>
+                                                    </select>
+                                                </div>
+
                                                 <button type="submit" name="update_task" class="btn btn-primary w-100">Save Changes</button>
                                             </form>
                                         </div>
