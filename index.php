@@ -81,7 +81,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_task'])) {
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_comment'])) {
     $task_index = $_POST['task_index'];
     $comment = trim($_POST['comment']);
-    
+
+    if (!isset($_SESSION['tasks'][$task_index]['comments'])) {
+        $_SESSION['tasks'][$task_index]['comments'] = [];
+    }
+
     if (!empty($comment)) {
         if (!in_array($comment, $_SESSION['tasks'][$task_index]['comments'])) {
             $_SESSION['tasks'][$task_index]['comments'][] = $comment;
@@ -230,6 +234,49 @@ $filtered_tasks = array_filter($_SESSION['tasks'], function($task) use ($status_
                                     </td>
                                 </tr>
 
+                                <!-- Comments Modal -->
+                                <div class="modal fade" id="commentModal<?= $index ?>" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Comments for <?= htmlspecialchars($task['title']) ?></h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <!-- Add Comment Form -->
+                                                <form method="POST">
+                                                    <input type="hidden" name="task_index" value="<?= $index ?>">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Add Comment:</label>
+                                                        <textarea name="comment" class="form-control" rows="3" required></textarea>
+                                                    </div>
+                                                    <button type="submit" name="add_comment" class="btn btn-primary w-100">Add Comment</button>
+                                                </form>
+
+                                                <!-- Display Comments -->
+                                                <hr>
+                                                <h5>Existing Comments:</h5>
+                                                <?php if (!empty($task['comments'])): ?>
+                                                    <ul>
+                                                        <?php foreach ($task['comments'] as $comment_index => $comment): ?>
+                                                            <li>
+                                                                <?= htmlspecialchars($comment) ?>
+                                                                <!-- Delete Comment -->
+                                                                <form method="POST" style="display:inline;">
+                                                                    <input type="hidden" name="task_index" value="<?= $index ?>">
+                                                                    <input type="hidden" name="comment_index" value="<?= $comment_index ?>">
+                                                                    <button type="submit" name="delete_comment" class="btn btn-danger btn-sm">Delete</button>
+                                                                </form>
+                                                            </li>
+                                                        <?php endforeach; ?>
+                                                    </ul>
+                                                <?php else: ?>
+                                                    <p>No comments yet.</p>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="modal fade" id="editModal<?= $index ?>" tabindex="-1">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
