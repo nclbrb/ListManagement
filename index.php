@@ -28,9 +28,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_task'])) {
         'due_date' => $due_date,
         'priority' => $priority,
         'assigned_user' => $assigned_user,
-        'status' => 'To Do'  // Default status
+        'status' => 'To Do',
+        'comments' => []
     ];
-
+    
     $_SESSION['tasks'][] = $task;
 
     // Sort the tasks by due date
