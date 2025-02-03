@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_task'])) {
         'status' => 'To Do',
         'comments' => []
     ];
-    
+
     $_SESSION['tasks'][] = $task;
 
     // Sort the tasks by due date
@@ -75,6 +75,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_task'])) {
         return strtotime($a['due_date']) - strtotime($b['due_date']);
     });
     $message = "Task deleted successfully!";
+}
+
+// Handle adding a comment
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_comment'])) {
+    $task_index = $_POST['task_index'];
+    $comment = trim($_POST['comment']);
+    
+    if (!empty($comment)) {
+        if (!in_array($comment, $_SESSION['tasks'][$task_index]['comments'])) {
+            $_SESSION['tasks'][$task_index]['comments'][] = $comment;
+        }
+    }
 }
 
 // Filter tasks by status and priority
