@@ -3,8 +3,6 @@ body {
     font-family: "Rubik", serif;
 }
 
-
-
 .card { 
     border-radius: 1rem; 
 }
@@ -38,4 +36,15 @@ body {
 .task-form {
     flex: 1;
     margin-right: 20px;
+}
+
+.btn-custom {
+    background-color: #596767;  
+    color: white;               
+    border: none;               
+}
+
+.bg-custom{
+    background-color: #2C423F;  
+    color: white;               
 }
