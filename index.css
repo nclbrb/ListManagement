@@ -3,8 +3,6 @@ body {
     font-family: "Rubik", serif;
 }
 
-
-
 .card { 
     border-radius: 1rem; 
 }
@@ -38,4 +36,25 @@ body {
 .task-form {
     flex: 1;
     margin-right: 20px;
+}
+
+.btn-custom {
+    background-color: #596767;  
+    color: white;               
+    border: none;               
+}
+
+.btn-custom:hover {
+    background-color: #394246;  
+    color: white;
+}
+
+.bg-custom{
+    background-color: #2C423F;  
+    color: white;               
+}
+
+table.table thead th {
+    background-color: #364c49;  
+    color: white;               
 }

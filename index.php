@@ -146,7 +146,7 @@ $filtered_tasks = array_filter($_SESSION['tasks'], function($task) use ($status_
 
     <div class="task-form">
         <div class="card shadow-lg">
-            <div class="card-header bg-primary text-white text-center">
+            <div class="card-header bg-custom text-white text-center">
                 <h3 class="mb-0">Create a New Task</h3>
             </div>
             <div class="card-body">
@@ -179,7 +179,7 @@ $filtered_tasks = array_filter($_SESSION['tasks'], function($task) use ($status_
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <button type="submit" name="add_task" class="btn btn-success w-100">Add Task</button>
+                    <button type="submit" name="add_task" class="btn btn-custom w-100">Add Task</button>
                 </form>
             </div>
         </div>
@@ -188,7 +188,7 @@ $filtered_tasks = array_filter($_SESSION['tasks'], function($task) use ($status_
     <!-- Task List Section -->
     <div class="task-list">
         <div class="card shadow-lg">
-            <div class="card-header bg-dark text-white text-center">
+            <div class="card-header bg-custom text-white text-center">
                 <h3 class="mb-0">Task List</h3>
             </div>
             <div class="card-body">
@@ -211,7 +211,7 @@ $filtered_tasks = array_filter($_SESSION['tasks'], function($task) use ($status_
                             </select>
                         </div>
                         <div>
-                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <button type="submit" class="btn btn-custom">Filter</button>
                         </div>
                     </div>
                 </form>
@@ -240,11 +240,11 @@ $filtered_tasks = array_filter($_SESSION['tasks'], function($task) use ($status_
                                     <td><?= isset($task['status']) ? htmlspecialchars($task['status']) : 'Not Set' ?></td>
                                     <td class="text-center">
                                     <div class="d-flex justify-content-center align-items-center gap-2">
-                                        <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editModal<?= $index ?>">Edit</button>
-                                        <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#commentModal<?= $index ?>">Comments</button>
+                                        <button class="btn btn-custom btn-sm" data-bs-toggle="modal" data-bs-target="#editModal<?= $index ?>">Edit</button>
+                                        <button class="btn btn-custom btn-sm" data-bs-toggle="modal" data-bs-target="#commentModal<?= $index ?>">Comments</button>
                                         <form method="POST" class="d-inline">
                                         <input type="hidden" name="task_index" value="<?= $index ?>">
-                                        <button type="submit" name="delete_task" class="btn btn-danger btn-sm">Delete</button>
+                                        <button type="submit" name="delete_task" class="btn btn-custom btn-sm">Delete</button>
                                         </form>
                                     </div>
                                     </td>
@@ -267,7 +267,7 @@ $filtered_tasks = array_filter($_SESSION['tasks'], function($task) use ($status_
                                                         <label class="form-label">Add Comment:</label>
                                                         <textarea name="comment" class="form-control" rows="3" required></textarea>
                                                     </div>
-                                                    <button type="submit" name="add_comment" class="btn btn-primary w-100">Add Comment</button>
+                                                    <button type="submit" name="add_comment" class="btn btn-custom w-100">Add Comment</button>
                                                 </form>
 
                                                 <!-- Display Comments -->
@@ -283,7 +283,7 @@ $filtered_tasks = array_filter($_SESSION['tasks'], function($task) use ($status_
                                                                 <form method="POST" style="display:inline;">
                                                                     <input type="hidden" name="task_index" value="<?= $index ?>">
                                                                     <input type="hidden" name="comment_index" value="<?= $comment_index ?>">
-                                                                    <button type="submit" name="delete_comment" class="btn btn-danger btn-sm">Delete</button>
+                                                                    <button type="submit" name="delete_comment" class="btn btn-custom btn-sm">Delete</button>
                                                                 </form>
                                                             </li>
                                                         <?php endforeach; ?>
@@ -342,7 +342,7 @@ $filtered_tasks = array_filter($_SESSION['tasks'], function($task) use ($status_
                                                             <option value="Completed" <?= $task['status'] == 'Completed' ? 'selected' : '' ?>>Completed</option>
                                                         </select>
                                                     </div>
-                                                    <button type="submit" name="update_task" class="btn btn-success w-100">Update Task</button>
+                                                    <button type="submit" name="update_task" class="btn btn-custom w-100">Update Task</button>
                                                 </form>
                                             </div>
                                         </div>
