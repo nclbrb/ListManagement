@@ -53,3 +53,8 @@ body {
     background-color: #2C423F;  
     color: white;               
 }
+
+table.table thead th {
+    background-color: #364c49;  
+    color: white;               
+}
