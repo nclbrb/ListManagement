@@ -44,6 +44,11 @@ body {
     border: none;               
 }
 
+.btn-custom:hover {
+    background-color: #394246;  
+    color: white;
+}
+
 .bg-custom{
     background-color: #2C423F;  
     color: white;               
