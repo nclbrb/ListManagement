@@ -147,7 +147,7 @@ $filtered_tasks = array_filter($_SESSION['tasks'], function($task) use ($status_
     <div class="task-form">
         <div class="card shadow-lg">
             <div class="card-header bg-custom text-white text-center">
-                <h3 class="mb-0">Create a New Task</h3>
+                <h3 class="mb-0">Add a New Task</h3>
             </div>
             <div class="card-body">
                 <form method="POST">
